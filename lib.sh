@@ -25,7 +25,6 @@ require_dir() {
 
     if [[ ! -d "$directory" ]]; then
         log_error "Directory does not exist: $directory"
-        return 1
     fi
 }
 
