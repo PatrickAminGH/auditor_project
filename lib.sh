@@ -8,7 +8,6 @@ log_info() {
 # Display errors
 log_error() {
     echo "[ERROR] $*" >&2
-	exit 1
 }
 
 # Save actions in the log file
@@ -25,6 +24,7 @@ require_dir() {
 
     if [[ ! -d "$directory" ]]; then
         log_error "Directory does not exist: $directory"
+		return 1
     fi
 }
 
