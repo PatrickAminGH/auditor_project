@@ -22,7 +22,7 @@ log_action() {
 require_dir() {
     local directory="$1"
 
-    if [ ! -d "$directory" ]; then
+    if [[ ! -d "$directory" ]]; then
         log_error "Directory does not exist: $directory"
         return 1
     fi
@@ -108,18 +108,18 @@ extension_report() {
 
     for path in "$directory"/*; do
 
-        [ -e "$path" ] || continue
+        [[ -e "$path" ]] || continue
 
-        if [ -f "$path" ]; then
+        if [[ -f "$path" ]]; then
 
             filename="${path##*/}"
 
-            if [[ "$filename" == *.* && "$filename" != .* ]]; then
-                extension="${filename##*.}"
-                extension="${extension,,}"
-            else
-                extension="other"
-            fi
+        if [[ "$filename" == *.* ]]; then
+    		extension="${filename##*.}"
+	else
+    		extension="other"
+	fi
+
 
             case "$extension" in
                 txt) ((txt++)) ;;
@@ -150,14 +150,11 @@ search_file() {
     local query
     local found=0
 
-    read -r -p "Enter file name to search for: " query
+    read -p "Enter file name to search for: " query
 
     for path in "$directory"/*; do
 
         [[ -e "$path" ]] || continue
-
-        [[ "$path" == "$directory/backups" ]] && continue
-        [[ "$path" == "$directory/auditor.log" ]] && continue
 
         if [[ -f "$path" ]]; then
 
@@ -170,7 +167,7 @@ search_file() {
 
     done
 
-    if [[ "$found" -eq 0 ]]; then
+    if [[ "$found" == 0 ]]; then
         echo "No files matched: $query"
     fi
 
@@ -188,14 +185,11 @@ backup_all() {
     local saved=0
     local skipped=0
 
-    mkdir -p "$backup_dir" || return 1
+    mkdir -p "$backup_dir"
 
     for path in "$directory"/*; do
 
         [[ -e "$path" ]] || continue
-
-        [[ "$path" == "$backup_dir" ]] && continue
-        [[ "$path" == "$directory/auditor.log" ]] && continue
 
         if [[ -f "$path" ]]; then
 
@@ -204,7 +198,7 @@ backup_all() {
                 filename="${path##*/}"
                 destination="$backup_dir/${filename}_$(date '+%Y%m%d_%H%M%S').bak"
 
-                if cp -- "$path" "$destination"; then
+                if cp "$path" "$destination"; then
                     ((saved++))
                 else
                     ((skipped++))
@@ -249,7 +243,7 @@ list_backups() {
 
     fi
 
-    if [[ "$found" -eq 0 ]]; then
+    if [[ "$found" == 0 ]]; then
         echo "(no backups yet)"
     fi
 
@@ -270,7 +264,7 @@ restore_backup() {
         return 1
     fi
 
-    read -r -p "Enter backup filename: " requested
+    read -p "Enter backup filename: " requested
 
     if [[ -z "$requested" || "$requested" == */* ]]; then
         log_error "Invalid backup filename"
@@ -291,7 +285,7 @@ restore_backup() {
         return 1
     fi
 
-    if cp -- "$source" "$destination"; then
+    if cp "$source" "$destination"; then
         log_info "Restored to: $destination"
         log_action "$directory" "Restored backup: $requested"
     else
