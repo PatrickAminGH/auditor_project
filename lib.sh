@@ -8,6 +8,7 @@ log_info() {
 # Display errors
 log_error() {
     echo "[ERROR] $*" >&2
+	exit 1
 }
 
 # Save actions in the log file
